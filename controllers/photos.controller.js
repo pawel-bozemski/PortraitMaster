@@ -12,7 +12,14 @@ exports.add = async (req, res) => {
 
       const fileName = file.path.split('/').slice(-1)[0]; // cut only filename from full path, e.g. C:/test/abc.jpg -> abc.jpg
       const fileExt = fileName.split('.').slice(-1)[0];
-      if (fileExt === 'jpg' || fileExt === 'gif' || fileExt === 'png') {
+      const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const badStrings = /[<>%\$]/;
+      if (fileExt === 'jpg' || fileExt === 'gif' || fileExt === 'png'
+        && title.length < 25
+        && badStrings.test(title)
+        && author.length < 50
+        && badStrings.test(author)
+        && validEmail.test(email) ) {
         const newPhoto = new Photo({ title, author, email, src: fileName, votes: 0 });
         await newPhoto.save(); // ...save new photo in DB
         res.json(newPhoto);
